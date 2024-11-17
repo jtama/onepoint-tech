@@ -41,7 +41,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           pr-number: ${{ steps.pr.outputs.id }}
           body: |
-            🚀 PR Preview for **blog** ${{ github.sha }} has been successfully built!
+            🚀 PR Preview for **blog** ${{ github.sha }} has been successfully built!!
             * https://onepoint-tech-${{ steps.pr.outputs.id }}-preview.surge.sh
           body-marker: <!-- Preview status comment marker -->
 
