@@ -36,7 +36,7 @@ jobs:
       - name: Store PR id
         if: github.event_name == 'pull_request'
         run: |
-          echo ${{ github.event.number }} >> ./target/pr-id.txt
+          echo ${{ github.event.number }} >> ./target/roq/pr-id.txt
 
       - name: Publishing blog
         if: github.event_name == 'pull_request'
