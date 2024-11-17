@@ -1,0 +1,61 @@
+---
+layout: :theme/post
+title: "Git update-refs in a nutshell"
+description: Git update-refs in a nutshell
+image: https://cdn.svgporn.com/logos/git-icon.svg
+tags: [git,tools]
+authors: [ibethus]
+---
+
+When working on a versioned project, it is relatively common to end up with a "stack" of branches. What could be more frustrating than having to rebase all the other branches on top of the first one when updating it? This process becomes even more tedious when the number of branches is high or when they are regularly modified.
+
+Git version 2.381:[] introduces a solution to this problem: the update-refs rebase option.
+
+== Stack?
+
+Branch stacking is a way to break down important features, allowing for smaller pull requests. In the example below, three branches dependent on each other have been created, allowing "my feature" to be divided into three distinct blocks.
+
+    The assumption here is that when each of these branches is individually merged into the main branch, the code will still be functional, as it has been appropriately divided.
+
+image::/static/assets/images/git-nutshell/initial.png[Initial state, align="center"]
+
+Let's say a small typo was made in the commit of the my-feature-v1 branch. A second commit needs to be added to fix the issue, resulting in the following history:
+
+image::/static/assets/images/git-nutshell/after-commit.png[after commit]
+
+In this situation, the only solution to update my-feature-v2 and my-feature-v3 is to checkout and rebase v2 on v1, then v3 on v2.
+
+This cumbersome process is remedied by the update-refs rebase option.
+
+== The solution
+=== update-refs
+
+The goal of this option is to automatically update the n branches on which the branch being rebased depends.
+
+Thus, in our case, we can simply checkout our my-feature-v3 branch and run the command git rebase my-feature-v1 --update-refs. With this option, Git updates not only the v3 branch but also the v2 branch to preserve the history. The result of this operation is as follows:
+
+image::/static/assets/images/git-nutshell/after-rebase.png[after rebase]
+
+=== In practice:
+
+image::/static/assets/images/git-nutshell/terminal.gif[showing commands in terminal]
+
+== Updating the Remote Repository
+
+Even if the branches being manipulated have already been pushed to the remote repository, it is possible to update all of them in a single command: git push --force-with-lease origin my-feature-v1 my-feature-v2 my-feature-v3
+
+    Here, a specific force push is used to preserve the remote history2.
+
+== Global Activation
+
+Why not always use the update-refs option during a rebase? The Git team asked themselves the same question and decided to include this possibility in the configuration. Thus, git config --global rebase.updateRefs true activates the option globally for each of your rebases.
+
+== In Summary
+
+* `git rebase \{my-branch\} --update-refs` updates a branch and all its dependencies
+* `git push --force-with-lease origin my-branch-1 my-branch-2 my-branch-n` pushes the update of these branches to the remote repository
+
+Happy rebasing!
+
+. https://github.blog/2022-03-21-git-2-38-0-released/[The release note is available here ↩]
+. See the https://comprendre-git.com/en/protips/git-push-with-lease/[use case] ↩

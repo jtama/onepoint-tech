@@ -1,0 +1,311 @@
+---
+layout: :theme/post
+title: "ArchUnit : comment l'utiliser pour contrôler l'architecture de vos projets Java "
+description: Tour d'horizon d'Archunit
+image: archunit/cover.jpg
+tags: [back,java, test]
+authors: [arousseau]
+---
+
+Vous êtes développeur et vous vous lancez dans la conception d'un nouveau projet ? L'une des premières étapes cruciales consiste à déterminer l'architecture logicielle qui sera utilisée. "Les classes seront-elles regroupées par couche ou par fonctionnalité ?". "Est-il préférable d'avoir une architecture MVC, MVP, hexagonale, etc... ?". "Devons-nous envisager un découpage par module ?". Ce sont autant de questions auxquelles il vous faudra répondre avant même d'écrire votre première ligne de code.
+
+Cependant, la vraie difficulté commence une fois l'architecture définie. Le plus dur reste désormais de s'assurer que l'ensemble des développements respecte les règles que vous vous êtes fixées. Je ne compte plus le nombre de fois où j'ai pu déceler des soucis architecturaux lors de merge requests. "Cette classe devrait plutôt être dans tel package", "cette classe ne devrait pas utiliser ces modèles".
+
+Cette situation vous semble familière ? Et si je vous disais qu'il existe un outil qui peut faire ces contrôles à votre place ? ArchUnit est une librairie Java qui va vous permettre de vérifier automatiquement que votre code respecte vos règles d'architecture. Nul besoin d'outil externe, le tout est validé au travers de vos tests unitaires ! Dites au revoir aux contrôles manuels, faillibles et chronophages. Dans cet article, je vais vous présenter comment utiliser ArchUnit au travers de cas d'usage concrets, sélectionnés à partir de ce que j'ai pu mettre en place sur mes précédents projets.
+
+Bien qu'il soit préférable d'utiliser ArchUnit aux prémices de votre projet, vous constaterez qu'il est tout à fait possible de l'intégrer à un projet déjà bien avancé. Afin que vous puissiez avoir des exemples concrets auxquels vous référer, cet article contient de nombreux extraits de code. Pour simplifier leur lecture, certains d'entre eux ont été abrégés, mais l'exhaustivité des sources présentées est disponible dans le dépôt GitHub https://github.com/4rthurRousseau/archunit-sample-project[archunit-sample].
+
+== ArchUnit, qu'est-ce que c'est ?
+
+image::https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yz4wz8ex97v0012c6y5y.png[ArchUnit logo]
+
+ArchUnit est une librairie conçue pour vérifier automatiquement l'architecture logicielle de votre application au travers de n'importe quel framework de test Java (typiquement, JUnit).
+
+Grâce à ArchUnit, vous pouvez définir des règles architecturales qui seront alors contrôlées au travers de tests unitaires. En cas d'échec, ces tests unitaires vous indiquent clairement les violations constatées et comment y remédier.
+
+Techniquement, ArchUnit repose sur l'analyse du bytecode Java, et sa matérialisation sous https://www.javadoc.io/doc/com.tngtech.archunit/archunit/latest/com/tngtech/archunit/core/domain/package-summary.html[forme de classes spécifiques à ArchUnit]. Par exemple, les classes https://www.javadoc.io/doc/com.tngtech.archunit/archunit/latest/com/tngtech/archunit/core/domain/JavaClass.html[`JavaClass`] et https://www.javadoc.io/doc/com.tngtech.archunit/archunit/latest/com/tngtech/archunit/core/domain/JavaMethod.html[`JavaMethod`] représentent respectivement les classes et les méthodes de votre projet.
+
+Son intégration simple et ses capacités d'extension font d'ArchUnit un outil de choix pour détecter automatiquement les écarts architecturaux, et ce dès les premières étapes de développement.
+
+== Intégration d'ArchUnit et création de votre première règle
+
+Au sein d'un projet qui utilise déjà JUnit, l'intégration d'ArchUnit ne nécessite que l'ajout de la librairie `archunit-junit5` (ou `archunit-junit4`, si vous utilisez toujours JUnit 4).
+Exemple d'intégration via Gradle :
+
+ testImplementation 'com.tngtech.archunit:archunit-junit5:1.3.0'
+
+
+Maintenant qu'ArchUnit est intégré à votre projet, il est temps de créer votre premier test d'architecture.
+
+[source, java]
+.https://github.com/4rthurRousseau/archunit-sample-project/blob/solution/src/test/java/fr/arthurrousseau/archunit/ArchitectureTest.java[ArchitectureTest.java]
+----
+// Si vous utilisez JUnit 4, pensez à utiliser le runner ArchUnitRunner via l'annotation @RunWith(ArchUnitRunner.class)
+@AnalyzeClasses(packages = "fr.arthurrousseau.archunit") <1>
+class ArchitectureTest {
+
+    @ArchTest <2>
+    public static final ArchRule SERVICES_MUST_BE_ANNOTATED = classes() <3>
+        .that().resideInAPackage("..service.impl") <4>
+        .should().beAnnotatedWith(Service.class); <5>
+
+    // Les règles peuvent être déclarées sous forme de méthodes ou de variables statiques
+    @ArchTest //2
+    void testThatClassesInDomainImplPackageMustBeAnnotated(JavaClasses classes) {
+        ArchRule rule = classes() <3>
+            .that().resideInAPackage("..service.impl") <4>
+            .should().beAnnotatedWith(Service.class); <5>
+        rule.check(classes);
+    }
+}
+----
+<1> L'annotation `@AnalyzeClasses` permet d'indiquer les classes qui seront testées par ArchUnit.
+<2> L'annotation `@ArchTest` (en remplacement de l'annotation `@Test`) rend possible l'injection des `JavaClass` au sein de vos méthodes de test.
+<3> La méthode `.that()` permet de ne conserver que les classes qui correspondent aux conditions qui suivent.
+<4> La méthode `.should()` applique les règles qui suivent aux classes qui ont été conservées.
+<5> Vérifier que l'ensemble des classes qui correspondent à ces filtres sont annotées avec l'annotation @Service.
+
+
+Le test ci-dessus permet donc de :
+
+. Charger l'ensemble des classes présentes dans le package `fr.arthurrousseau.archunit`
+. Filtrer et ne conserver que les classes qui sont présentes dans le package `*.service.impl`
+. Vérifier que l'ensemble des classes qui correspondent à ces filtres sont annotées avec l'annotation `@Service`.
+
+Pour tester cette règle, admettons qu'au sein de votre projet vous disposez d'une classe `ProductServiceImpl` n'étant pas annotée `@Service` :
+
+[source,java]
+----
+package fr.arthurrousseau.archunit.products.service.impl;
+
+// [...]
+
+@RequiredArgsConstructor
+public class ProductServiceImpl implements ProductService {
+    [...]
+}
+----
+
+Voici le résultat que retournerait l'exécution des tests d'architecture :
+
+[source]
+----
+java.lang.AssertionError: Architecture Violation [Priority: MEDIUM] - Rule 'classes that reside in a package '..service.impl' should be annotated with @Service' was violated (1 times):
+Class <fr.arthurrousseau.archunit.products.service.impl.ProductServiceImpl> is not annotated with @Service in (ProductServiceImpl.java:0)
+----
+
+La classe `ProductServiceImpl` ne respectant pas la règle décrite, le test échoue. Les informations tracées lors de l'exécution des tests ArchUnit permettent de cibler l'origine du problème.
+
+Aussi simple soit-elle, cette première règle vous rapproche un peu plus de l'automatisation du contrôle de l'architecture de votre projet !
+
+
+== Mise en place de règles unitaires et composites
+Maintenant que vous avez écrit votre première règle ArchUnit, passons à son intégration dans un projet plus complet. A partir de maintenant, les extraits de code qui suivent sont issus du projet https://github.com/4rthurRousseau/archunit-sample-project[archunit-sample].
+
+Le package `controller` contient les classes qui exposent les points d'entrée permettant d'effectuer des opérations sur les produits que gère le projet.
+Afin de s'assurer de la cohérence des nos points d'entrée, il a été décidé que l'ensemble des controllers soient annotés avec l'annotation `@Controller`, possèdent le suffixe `Controller` et soient positionnés à la racine du package `..controller`.
+
+Cette cohérence peut être assurée à l'aide des trois **règles unitaires** suivantes :
+[source,bash]
+----
+@ArchTest
+public static final ArchRule CONTROLLER_NAMING_RULE = classes()
+    .that().areAnnotatedWith(Controller.class)
+    .should().haveSimpleNameEndingWith("Controller");
+
+@ArchTest
+public static final ArchRule CONTROLLER_ANNOTATION_RULE = classes()
+    .that().haveSimpleNameEndingWith("Controller")
+    .should().beAnnotatedWith(Controller.class);
+
+@ArchTest
+public static final ArchRule CONTROLLER_LOCATION_RULE = classes()
+    .that().areAnnotatedWith(Controller.class)
+    .should().resideInAPackage("..controller");
+----
+
+Mais elles peuvent également être regroupées au sein d'une seule et même **règle composite** :
+
+[source,bash]
+.https://github.com/4rthurRousseau/archunit-sample-project/blob/solution/src/test/java/fr/arthurrousseau/archunit/ControllerTest.java[ControllerTest.java - Github.com]
+----
+@ArchTest
+public static final ArchRule CONTROLLER_RULE = classes()
+        .that().areAnnotatedWith(Controller.class)
+        .or()
+        .haveSimpleNameEndingWith("Controller")
+        .should().resideInAPackage("..controller")
+        .andShould().beAnnotatedWith(Controller.class)
+        .andShould().haveSimpleNameEndingWith("Controller");
+----
+
+
+En regroupant ces vérifications au sein d'une seule et même règle, vous centralisez vos contrôles, vous rendez plus naturelle la compréhension de vos règles et vous simplifiez leur maintenance (si demain vous décidiez de modifier votre règle pour utiliser des `@RestController` plutôt que des `@Controller`, vous n'auriez qu'une seule règle à modifier).
+
+== Aller plus loin à l'aide des conditions personnalisées
+Toujours pour assurer la cohérence des points d'entrée, voyons comment faire pour s'assurer que ceux-ci ne manipulent que des objets qui leur sont dédiés. Interdiction donc de recevoir ou de renvoyer des objets du package `domain` : les objets utilisés devront provenir du package `controller.model`
+
+Bien qu'ArchUnit mette à disposition un https://javadoc.io/doc/com.tngtech.archunit/archunit/latest/com/tngtech/archunit/lang/conditions/ArchConditions.html[grand nombre de méthodes] (163 à date) permettant de vérifier que vos classes respectent les règles que vous avez fixées (comme par exemple, les méthodes `beAnnotatedWith` et `haveSimpleNameEndingWith` que vous avez utilisées jusqu'à présent[grand nombre de méthodes], vous aurez parfois besoin d'aller plus loin.
+
+Pour mettre en place cette nouvelle règle vous allez devoir utiliser une **condition personnalisée**. Ce type de condition va vous permettre de mettre en place des règles plus poussées avec une extrême simplicité. En effet, il vous suffit d'étendre la classe `ArchCondition` et implémenter la méthode `check` pour lui faire faire ce que vous souhaitez !
+
+Voici la signature de la méthode que vous devrez implémenter :
+
+[source,java]
+----
+void check(JavaClass clazz, ConditionEvents events)
+----
+
+Le premier paramètre, `clazz`, correspond à la classe qui est en train d'être contrôlée. Le second paramètre, `events`, fait office de registre de violations de règles. A chaque fois qu'une violation sera constatée sur la classe en cours de test, c'est au travers de cet objet qu'elle devra être tracée.
+
+[source,java]
+.https://github.com/4rthurRousseau/archunit-sample-project/blob/solution/src/test/java/fr/arthurrousseau/archunit/ControllerTest.java#L46[ControllerTest.java - Github.com]
+----
+static class UseDtoObjectsOnly extends ArchCondition<JavaClass> {
+    public UseDtoObjectsOnly(Object... args) {
+        super("use DTO objects only", args); // 1
+    }
+
+    @Override
+    public void check(JavaClass controllerClass, ConditionEvents events) {
+        for (JavaMethod method : controllerClass.getMethods()) {
+            JavaClass returnClass = method.getReturnType().toErasure();
+            var packageName = returnClass.getPackageName();
+
+            if (!packageName.contains("controller.model") || !returnClass.getSimpleName().endsWith("Dto")) { // 2
+                events.add(SimpleConditionEvent.violated(method, "Violation détectée")); // 3
+            }
+        }
+    }
+}
+----
+
+L'exemple ci-dessus présente une façon d'atteindre nos objectifs. Les éléments les plus importants de cette implémentation sont les suivants :
+
+. Message associé à la condition, utilisé lorsque pour créer les traces d'erreur en cas de violation,
+. On vérifie, au travers des objets fournis par ArchUnit, que l'objet retourné se trouve bien dans le package `controller.model` et possède un nom qui termine par `Dto`,
+. `events.add(SimpleConditionEvent.**violated**(method, message));` méthode permettant de tracer le fait que la méthode testée n'a pas respecté la condition personnalisée.
+
+
+Pour utiliser cette condition, il suffit de l'associer à une nouvelle règle :
+[source,java]
+----
+@ArchTest
+public static final ArchRule CONTROLLER_RULE = classes()
+    .that().areAnnotatedWith(Controller.class)
+    .or().haveSimpleNameEndingWith("Controller")
+    .should(new UseDtoObjectsOnly());
+----
+
+Le controller https://github.com/4rthurRousseau/archunit-sample-project/blob/solution/src/main/java/fr/arthurrousseau/archunit/products/ProductControler.java) possède une méthode `add([`ProductsController`]` qui prend en entrée un objet de type `Product` qui réside dans le package `domain.model`.
+[source,java]
+----
+@Controller
+public class ProductControler {
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProductDto add(@RequestBody Product product) {
+        return productService.saveProduct(product);
+    }
+}
+----
+
+La règle que vous venez de mettre en place lève une erreur et indique, comme vous pouviez vous y attendre, que ce controller manipule des données qui ne sont pas propres au package `controller.model` :
+
+[source]
+----
+java.lang.AssertionError: Architecture Violation [Priority: MEDIUM] - Rule 'classes that are annotated with @Controller or have simple name ending with 'Controller' should use DTO objects only was violated (1 time):
+Method fr.arthurrousseau.archunit.products.ProductControler.add() has a parameter fr.arthurrousseau.archunit.products.service.model.Product which is not in the controller.model package and / or does not end with Dto
+----
+
+
+== ArchUnit et le concept de règles gelées
+Lors de l'ajout de nouvelles règles au sein de projets existants, il est possible qu'un certain nombre de violations existantes soient détectées.
+Parfois, leur nombre est tel qu'il n'est pas possible d'y remédier immédiatement. La meilleure façon de traiter ces violations consiste à les traiter petit à petit, de façon itérative.
+
+Les règles d'architecture peuvent être gelées à l'aide de la classe https://www.javadoc.io/doc/com.tngtech.archunit/archunit/latest/com/tngtech/archunit/library/freeze/FreezingArchRule.html[FreezingArchRule]. Le fait de geler une règle enregistre l'ensemble des violations actuelles dans un `ViolationStore`. De cette façon, lors des prochaines exécutions, seules les nouvelles violations lèveront une erreur. Les violations listées lors du gel de la règle seront supprimées du `ViolationStore` dès leur correction.
+
+Pour geler une règle, il suffit de l'encapsuler dans la méthode `FreezingArchRule.freeze(rule))` :
+[source,java]
+.https://github.com/4rthurRousseau/archunit-sample-project/blob/solution/src/test/java/fr/arthurrousseau/archunit/ControllerTest.java#L23[ControllerTest.java - Github.com]
+----
+@ArchTest
+public static final ArchRule SERVICES_SHOULD_CALL_LOGGER_RULE = FreezingArchRule.freeze(methods().that()./* Suite de la règle */));
+----
+
+En plus de cela, il vous sera nécessaire d'autoriser la création d'un nouveau store en créant un fichier `archunit.properties` au sein des ressources de votre projet :
+[source, properties]
+.https://github.com/4rthurRousseau/archunit-sample-project/blob/solution/src/main/resources/archunit.properties[archunit.properties - Github.com]
+----
+# Permet la création du ViolationStore
+freeze.store.default.allowStoreCreation=true
+----
+
+Suite à la première exécution de cette règle gelée, vous constaterez qu'ArchUnit a créé deux nouveaux fichiers dans le dossier `archunit_store` :
+[source, properties]
+.https://github.com/4rthurRousseau/archunit-sample-project/blob/solution/archunit_store/stored.rules[stored.rules - Github.com]
+----
+#Tue Jun 04 23:48:33 CEST 2024
+[NOM_DE_LA_REGLE]=2a2375fa-54ec-4fa7-b979-17478323ac4c
+----
+
+[source]
+.https://github.com/4rthurRousseau/archunit-sample-project/blob/solution/archunit_store/2a2375fa-54ec-4fa7-b979-17478323ac4c[2a2375fa-54ec-4fa7-b979-17478323ac4c - Github.com]
+----
+Method fr.arthurrousseau.archunit.products.service.impl.Products.deleteProduct() doesn't log anything
+Method fr.arthurrousseau.archunit.products.service.impl.Products.getAllProducts() doesn't log anything
+Method fr.arthurrousseau.archunit.products.service.impl.Products.getProductById() doesn't log anything
+----
+
+Le premier fichier contient la liste des règles gelées et leurs identifiants. Le second fichier contient quant à lui l'ensemble des violations existantes au moment du gel de la règle. Chaque règle gelée possède son propre fichier, nommé en fonction d'un identifiant unique généré par ArchUnit.
+
+== Contrôler l'architecture globale de votre application
+Si vous souhaitez vous assurer que l'architecture globale de votre projet est respectée, alors vous aurez besoin d'utiliser des fonctions du package `com.tngtech.archunit.library`.
+
+Ce package comporte une large collection de règles prédéfinies qui seraient complexes à mettre en place au travers de simples règles.
+
+Dans le cadre du projet https://github.com/4rthurRousseau/archunit-sample-project[archunit-sample], voici les règles qui composent l'architecture globale du projet :
+
+* Le package `controller` n'est accédé par aucun autre package. Ce package a accès au package `service`.
+* Le package `service` est indépendant, il ne dépend ni du package `controller`, ni du package `repository`*.
+* Le package `repository` n'est accédé par aucun autre package*. Ce package a accès au package `service`.
+
+(*) Techniquement, le package service est indépendant des autres puisqu'il expose une interface `ProductRepository` qui est implémentée par le package repository.
+
+image::https://dev-to-uploads.s3.amazonaws.com/uploads/articles/o01apykymzlqq0mryk0x.png[Graph de dépendance du projet archunit-sample]
+
+Cette architecture peut être vérifiée à l'aide de la règle ci-dessous :
+[source,java]
+.https://github.com/4rthurRousseau/archunit-sample-project/blob/solution/src/test/java/fr/arthurrousseau/archunit/ArchitectureTest.java#L20[ControllerTest.java - Github.com]
+----
+@ArchTest
+    public static final ArchRule LAYERED_ARCHITECTURE_TEST = layeredArchitecture()
+            .consideringOnlyDependenciesInLayers()
+            .layer("Controller").definedBy("..controller..")
+            .layer("Service").definedBy("..service..")
+            .layer("Data").definedBy("..data..")
+            .whereLayer("Controller").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Controller").mayOnlyAccessLayers("Service")
+            .whereLayer("Service").mayNotAccessAnyLayer()
+            .whereLayer("Data").mayOnlyBeAccessedByLayers("Service");
+----
+
+Au travers d'une syntaxe simple, chacun des packages du projet est associé à une couche de l'architecture de l'application. Chacune des couches déclarées peut alors spécifier à quelle autre couche elle a accès, mais aussi quelle autre couche a droit d'y accéder.
+
+== Que retenir de l'utilisation d'ArchUnit ?
+Mettre en place l'architecture logicielle d'un projet est une chose, s'assurer qu'elle soit respectée et maintenue en est une autre.
+
+ArchUnit permet de définir et de vérifier automatiquement que votre projet respecte les règles architecturales que vous vous êtes fixées. En vous affranchissant de ces vérifications manuelles, vous aurez plus de temps pour vous concentrer sur ce qui compte vraiment pour vous : produire du code de qualité et développer de nouvelles fonctionnalités innovantes pour vos clients.
+
+L'intégration d'ArchUnit dans vos projets Java est simple et rapide : il vous suffit d'ajouter la librairie qui correspond à votre version de JUnit et le tour est joué ! Sa flexibilité et son extensibilité en font un outil puissant capable de s'adapter aux besoins spécifiques de chaque projet. De plus, la possibilité de geler des règles vous permet de remédier progressivement aux violations existantes, sans impact immédiat sur vos développements.
+
+Vous êtes en quête d'idées de règles à appliquer à vos projets ? N'hésitez pas à consulter la https://www.archunit.org/userguide/html/000_Index.html#_what_to_check[documentation officielle] d'ArchUnit. Vous y trouverez de nombreux cas d'usage qui pourront vous aider à trouver l'inspiration.
+
+Pour les utilisateurs avancés, voici quelques pistes que vous pourriez explorer pour aller plus loin.
+
+* Mettre en place une règle pour vérifier que vous n'avez pas d'annotations `@Autowired` sur vos attributs (préférez les injections par constructeur),
+* Exporter vos règles dans une librairie dédiée (idéal si vous avez de nombreux projets qui doivent respecter les mêmes règles),
+* Générer vos règles ArchUnit à partir de diagrammes de classe PlantUML (exemple https://www.archunit.org/userguide/html/000_Index.html#_plantuml_component_diagrams_as_rules)[à cette adresse])
+
+Si à la suite de cet article vous avez sauté le pas, n'hésitez pas à partager vos retours d'expérience. Je suis curieux de savoir comment vous avez adopté ArchUnit au sein de vos applications !

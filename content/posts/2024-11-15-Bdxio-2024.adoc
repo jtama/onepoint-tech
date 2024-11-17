@@ -1,0 +1,125 @@
+---
+layout: :theme/post
+title: "BDX I/O 2024 vu par nos experts Onepoint "
+description: BDX I/O 2024 vu par nos experts Onepoint, les conférences qu'ils ont aimé.
+image: bdxio2024/cover.jpg
+figCaption: "Vue de la verrière de la gare de Bordeaux Saint-Jean"
+tags: [conference,techtalks]
+authors: [lthienot]
+---
+
+
+* https://www.linkedin.com/in/sofia-krari-02361143/[Sofia Krari] : “Les histoires d’A finissent pas si mal : Offboarding ou la fin de la relation entre un client et une marque”
+* https://www.linkedin.com/in/veroniquesermage/[Véronique Sermage] : “D’officier de l’Armée de Terre à développeur : RETEX d’une autiste en quête d’inclusion”
+* https://www.linkedin.com/in/cecile-hannotte/[Cécile Hannotte] : “IA-404 : Explication not found”
+* https://www.linkedin.com/in/emma-quinio/[Emma Quinio] : “Un site web c’est comme Disneyland”
+* https://www.linkedin.com/in/noemiemelidariviere/[Noémie Rivière] :  “L’IA, la nouvelle fracture !”
+* https://www.linkedin.com/in/david-maurin-61466856/[Florian Allaimat](https://www.linkedin.com/in/%F0%9F%92%BB-florian-allainmat-8142aa89/) et [David Maurin] :  “Angular change de logo mais pas que”
+* https://www.linkedin.com/in/denismaurel/[Denis Maurel] : “Causalité et statistiques, un amour pas si impossible que ça”.
+
+image::/static/assets/images/git-nutshell/la_team.jpg[La team Onepoint]
+
+Cette année BDX I/O nous a permis d'enrichir notre bagage technique et culturel autour de l'IA, entre autres sujets passionnants. Mais passons au concret : les avis de nos experts https://dev.to/onepoint[onepoint] selon les différentes thématiques abordées pendant la journée.
+
+== Culture dev
+
+=== L'envers du décor d'un passage douloureux à Vue 3, par Guillaume Amat (Back Market)
+_avis par https://www.linkedin.com/in/christophefrezier/[Christophe Frézier], architecte frontend_
+
+Un REX de la part de Back Market. Les technologies impliquées étaient Django/Angular pour ensuite passer à Django/Vue + Nuxt puis en dernier (celle qui nous intéresse ici) à Vue3.
+On y apprend qu'il y a eu une grande incompatibilité entre Vue 2 et 3, et tout cela s'est cumulé avec un retard entre l'annonce de Vue3 et sa disponibilité, un délai aussi sur la disponibilité de Nuxt version Vue 3, et une collision avec l'agenda des besoins de l'entreprise, notamment un changement de charte graphique, et un passage à des services (pas forcément micro) et une séparation des différentes interfaces (front grand public, B2B, ...).
+Enrichissant sur les péripéties qui leur sont arrivées, même si cela ne donne pas franchement envie de poursuivre avec un framework jetant la rétro compatiblité aux oubliettes :)
+
+
+=== Les 20 minutes de Typescript les plus rentables de votre vie, par Delphin Aubin (Zenika) et Aurélin Loyer (QIMA)
+_avis par https://www.linkedin.com/in/christophefrezier/[Christophe Frézier], architecte frontend_
+
+Un quickie de 20 minutes sur quelques astuces TS très intéressantes (Flavoring, Function overload, ...) qui permettent vraiment concrètement de gagner en performance de la complétion basée sur TS, et de valider réellement le code décrit. Vous réfléchirez plus longtemps avant d'écrire `any` dans votre code !
+
+
+=== Angular change de logo mais pas que, par Florian Allainmat et David Maurin (onepoint)
+_avis par https://www.linkedin.com/in/christophefrezier/[Christophe Frézier], architecte frontend_
+
+Très bonne conférence assez exhaustive sur les changements des dernières versions d'Angular, les possibilités des schematics sur ces points, ... On regrettera que l'application ne soit pas plus exploitée ou que le live coding n'ait pas été plus présent, mais c'est tout à fait logique parce qu'on voit qu'il y avais énormément de choses, trop pour une conférence de cette durée (la conférence originale se faisait sur 2 heures, pour être diminuée à 45 minutes). Néanmoins, le brio des speakers nous permet de découvrir ces fonctionnalités sans nous ennuyer, et avec suffisamment de retours et de détails
+pour apprécier le moment.
+
+=== Cache 101 : Comprendre les stratégies clés avant de les appliquer, par Robin Colombier (Ekino)
+_avis par https://www.linkedin.com/in/guillaume-benoot-83057b19b/[Guillaume Benoot], développeur backend_
+
+Un quickie qui pointe du doigt à quel point la mise en cache peut être mystérieuse quand on commence sa carrière de développeur, puis nous présente les différents types caches à notre disposition.
+Une présentation qui s'adresse plutôt au débutant, même si un petit peu de rappel ne fait jamais de mal.
+
+=== Je malmène ta prod en direct avec 15 failles de sécu, par Gaetan Eleouet (Meritis)
+_avis par https://www.linkedin.com/in/emilien-mamalet/[Emilien Mamalet], leader technique backend_
+
+Un grand classique, l'OWASP ! Même si le top 10 des failles de sécurité est très connu, ça fait pas de mal de les revoir.
+
+_avis par https://www.linkedin.com/in/denismaurel/[Denis Maurel], consultant Data et IA R&D_
+
+Certains ont crié au clickbait, mais force est d'avouer que Marie-Antoinette qui fait appel à un expert en sécurité pour battre Napoléon, sur l'échelle de la popularité, ça fait quand même vraiment envie.
+On peut clairement parler de mise en scène pour cette conférence présentée par https://www.linkedin.com/in/gaetan-eleouet/[Gaetan Eleouet], speaker ayant décidé qu'une présentation PPT, c'était so 2014.
+La conférence était parfaite pour qui voulait voir une introduction au monde merveilleux des failles de sécurité web et de leur exploitation.
+
+
+
+== Culture infra
+
+=== Secrets faciles dans Kubernetes : parce que je le Vault bien, par Alexis Fala (Deezer)
+_avis par https://www.linkedin.com/in/guillaume-benoot-83057b19b/[Guillaume Benoot], développeur backend_
+
+https://www.linkedin.com/in/alexis-fala/[Alexis Fala] nous explique comment gérer nos secrets dans kubernetes grâce à Vault Secret Operator.
+Après une présentation de la solution et des différentes options à notre disposition, il enchaîne sur une session de live coding pour passer de la théorie à la pratique pour nous démontrer la puissance de l'outil.
+C'est clair et maîtrisé, et le sujet a l'air d'avoir beaucoup plu au vu du nombre de questions à la suite de la présentation.
+
+=== 20 000 nuages sous les mers, par Antoine Oili et Nicolas Bouron (Zenika)
+_avis par https://www.linkedin.com/in/guillaume-benoot-83057b19b/[Guillaume Benoot], développeur backend_
+
+https://www.linkedin.com/in/nbouron/[Antoine Oili](https://www.linkedin.com/in/antoine-oili/) et [Nicolas Bouron] nous racontent avec passion l'évolution à travers le temps de l'utilisation des câbles sous-marins pour transporter de la donnée.
+Une présentation captivante dans laquelle on découvre les améliorations techniques et les enjeux géopolitiques de la circulation de l'information.
+
+== Culture soft skills
+
+=== L'art de la précision : stratégies et défis des estimations en développement, par Olga Yasnopolskaya (Ekino)
+_avis par https://www.linkedin.com/in/guillaume-benoot-83057b19b/[Guillaume Benoot], développeur backend_
+
+Dans ce quickie, https://www.linkedin.com/in/olga-yasnopolskaya/[Olga Yasnopolskaya] nous explique les difficultés qu'elle a rencontrées en tant que développeuse junior front pour faire des estimations. Elle nous fait un retour sur les recherches qu'elle a faites pour s'aider dans cette tâche, les différentes façons d'estimer le temps que va prendre telle ou telle feature et comment, grâce aux conseils de développeurs plus expérimentés, elle a pu gagner en confiance malgré le côté résolument aléatoire des estimations.
+
+=== La douceur est-elle un avantage dans ce monde de brutes ?, par Anaïs Huet (Coach agile freelance)
+_avis par https://www.linkedin.com/in/denismaurel/[Denis Maurel], consultant Data et IA R&D_
+
+Au delà des conférences techniques, j'ai particulièrement apprécié le fait d'assister à des conférences comme celle d'https://www.linkedin.com/in/anais-huet-coach-agile/[Anaïs Huet] destinées à challenger ma vision du monde de la tech.
+Qu'est-ce qu'être doux ? Quels impacts cela peut avoir sur notre vie professionnelle ? Ce genre de questions que l'on n'a pas forcément l'habitude de se poser, et qui régissent pourtant nombre de nos interactions au quotidien. À regarder pour qui se questionne sur l'utilisation récurrente du concept de "bienveillance" en milieu professionnel.
+
+== Culture IA
+
+=== IA-404 : Explication not found, par Cécile Hannotte (onepoint)
+_avis par https://www.linkedin.com/in/emilien-mamalet/[Emilien Mamalet], leader technique backend_
+
+S'il y a bien une conférence à voir pour faire un premier pas dans l'intelligence artificielle, c'est celle-ci ! L'IA, c'est compliqué ? Plus maintenant ! Cette conférence explicite l'envers du décor. Le but est simple : enlever l'effet boîte noire que l'on ressent tous quand on parle d'IA, en utilisant des exemples que nous avons tous vus passer, notamment la reconnaissance d'animaux ou l'attribution d'un prêt immobilier.
+
+_avis par https://www.linkedin.com/in/denismaurel/[Denis Maurel], consultant Data et IA R&D_
+
+https://www.linkedin.com/in/cecile-hannotte/[Cécile Hannotte] a réussi à présenter en 45 minutes les concepts clés autour de l'explicabilité et de l'interprétabilité des modèles d'IA d'aujourd'hui.
+Avec un nombre impressionnant d'images de chats au mètre carré, Cécile a su vulgariser les enjeux qui se cachent actuellement derrière l'utilisation des LLMs.
+À ne pas manquer pour qui souhaite rentrer dans les détails du domaine sans jamais avoir à lire une équation.
+
+
+=== Un ChatGPT sur vos propres données : comment ça marche ?, par Hugo Vassard (Ippon Technologies)
+_avis par https://www.linkedin.com/in/lucile-thienot/[Lucile Thiénot], leader technique backend_
+
+https://www.linkedin.com/in/hugo-vassard-820610173/[Hugo Vassard] nous laisse entrevoir la puissance de la recherche documentaire augmentée par IA : imaginez tous vos documents administratifs ingérés par une IA capable de répondre à vos moindres questionnements sans effort. Ça a de quoi faire rêver !
+On n'y oublie pas non plus de réfléchir à la confidentialité, avec en prime un petit jeu capable de convaincre très rapidement de la nécessité de bien choisir les données offertes à l'IA : https://gandalf.lakera.ai/. Have fun!
+
+=== Keynote de fermeture : Si l'IA peut créer de la musique, à quoi servent les musiciens aujourd'hui ?, par Nirina Rabeson (Zenika)
+
+_avis par https://www.linkedin.com/in/emilien-mamalet/[Emilien Mamalet], leader technique backend_
+
+Keynote de fermeture excellente pour allier la musique avec l'IA. On construit pas à pas une musique qui nous est bien familière, au travers différents parallèle funs avec le monde de l'IA.
+
+_avis par https://www.linkedin.com/in/denismaurel/[Denis Maurel], consultant Data et IA R&D_
+
+J'ai été véritablement bluffé par cette keynote de fermeture qui a le mérite de poser des mots d'une extrême simplicité sur un débat qui ne l'est pourtant pas de prime abord. Outre le fait qu'il réussit à expliquer le principe de la création musicale à l'aide de grilles de sudoku, https://www.linkedin.com/in/nirinarabeson/[Nirina Rabeson] arrive en plus à parler d'IA et d'humain sans tomber dans aucun extrême.
+Si en plus vous êtes fan de Radiohead, vous ne serez pas déçu.
+
+On se retrouve l'année prochaine ! 
+

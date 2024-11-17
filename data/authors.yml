@@ -1,0 +1,42 @@
+jtama:
+  name: "Jérôme Tama"
+  avatar: "https://github.com/jtama.png"
+  job: Architecte/Tech Lead/Compagnon du devoir
+  profile: "https://x.com/jtama_"
+  nickname: "jtama"
+  bio: "Passionate about Java, Quarkus, containers, and documentation as code, I mainly develop, train, and sometimes contribute to OSS projects"
+ibethus:
+  name: "Ivan Bethus"
+  avatar: "https://github.com/ibethus.png"
+  job: Dévelopêur Backend/Enseignant vacataire
+  nickname: "ibetus"
+  profile: "https://github.com/ibethus"
+  bio: |
+    "Développeur backend depuis plus de quatre ans, porté sur les frameworks Java Spring et Quarkus.
+
+     Ce qui m'anime :
+
+      . le clean code (Robert C. Martin🤟)
+      . les points tech
+      . en bref, apprendre et transmettre
+dlucas:
+  name: "Damien Lucas"
+  avatar: "https://github.com/dlucasd.png"
+  job: Architecte/Tech Lead
+  profile: "https://x.com/dlucasd"
+  nickname: "dlucasd"
+  bio: "Ayant commencé ma carrière dans le mainframe, je suis maintenant Tech Lead et Architecte Logiciel Java depuis plusieurs années. J'adore lire la doc avant de me lancer dans le code. Et par dessus tout, j'aime échanger et transmettre sur ce que j'ai pu apprendre de mes expériences, des discussions avec mes pairs, des conférences vues ..."
+lthienot:
+  name: "Lucile Thienot"
+  avatar: "https://media2.dev.to/dynamic/image/width=320,height=320,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Fuser%2Fprofile_image%2F1663337%2F1ab2fd24-23e7-4410-b3fd-717bfc42bf4f.jpg"
+  job: Tech Lead
+  profile: "https://www.linkedin.com/in/lucile-thienot/"
+  nickname: "Rocket"
+  bio: "Leader technique java et formatrice (java, tests unitaires, ..) chez onepoint. Mais avant tout être humain enthousiaste aux passions diverses, parfois éphémères mais toujours dévorantes."
+arousseau:
+  name: "Arthur Rousseau"
+  avatar: "https://github.com/4rthurRousseau.png"
+  job: Architecte/Tech Lead
+  profile: "https://github.com/4rthurRousseau"
+  nickname: "arousseau"
+  bio: "Not found"

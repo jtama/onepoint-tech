@@ -1,0 +1,10 @@
+items:
+  - title: "Blog"
+    path: "/"
+    icon: "fa-regular fa-newspaper"
+  - title: "Rss"
+    path: "/rss.xml"
+    icon: "fa fa-rss"
+  - title: "About"
+    path: "/about"
+    icon: "fa fa-thumbs-up"
