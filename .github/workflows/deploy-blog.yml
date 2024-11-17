@@ -22,13 +22,12 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Build & Generate Blog
-        working-directory: blog
         run: QUARKUS_ROQ_GENERATOR_BATCH=true mvn -B package quarkus:run -Dquarkus.profile=gh-pages -DskipTests
       - name: Upload site as artifact
         uses: actions/upload-artifact@v4
         with:
           name: site
-          path: blog/target/roq
+          path: ./target/roq
           retention-days: 1
   deploy:
     # Only try and deploy on merged code
