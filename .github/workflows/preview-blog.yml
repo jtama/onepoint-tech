@@ -17,12 +17,6 @@ jobs:
     permissions:
       pull-requests: write # Required to update PR status comment
     steps:
-      - name: Store PR id as variable
-        id: pr
-        run: |
-          echo "id=$(<pr-id.txt)" >> $GITHUB_OUTPUT
-          rm -f pr-id.txt
-
       - name: Download blog artifact
         uses: actions/download-artifact@v4
         with:
