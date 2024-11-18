@@ -17,7 +17,7 @@ authors: [lthienot]
 * https://www.linkedin.com/in/david-maurin-61466856/[Florian Allaimat](https://www.linkedin.com/in/%F0%9F%92%BB-florian-allainmat-8142aa89/) et [David Maurin] :  “Angular change de logo mais pas que”
 * https://www.linkedin.com/in/denismaurel/[Denis Maurel] : “Causalité et statistiques, un amour pas si impossible que ça”.
 
-image::/static/assets/images/git-nutshell/la_team.jpg[La team Onepoint]
+image::{site.url('/static/assets/images/bdxio2024/la_team.jpg')}[La team Onepoint]
 
 Cette année BDX I/O nous a permis d'enrichir notre bagage technique et culturel autour de l'IA, entre autres sujets passionnants. Mais passons au concret : les avis de nos experts https://dev.to/onepoint[onepoint] selon les différentes thématiques abordées pendant la journée.
 

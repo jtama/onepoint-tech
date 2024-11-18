@@ -17,11 +17,11 @@ Branch stacking is a way to break down important features, allowing for smaller 
 
     The assumption here is that when each of these branches is individually merged into the main branch, the code will still be functional, as it has been appropriately divided.
 
-image::/static/assets/images/git-nutshell/initial.png[Initial state, align="center"]
+image::{site.url('/static/assets/images/git-nutshell/initial.png')}[Initial state, align="center"]
 
 Let's say a small typo was made in the commit of the my-feature-v1 branch. A second commit needs to be added to fix the issue, resulting in the following history:
 
-image::/static/assets/images/git-nutshell/after-commit.png[after commit]
+image::{site.url('/static/assets/images/git-nutshell/after-commit.png')}[after commit]
 
 In this situation, the only solution to update my-feature-v2 and my-feature-v3 is to checkout and rebase v2 on v1, then v3 on v2.
 
@@ -34,11 +34,11 @@ The goal of this option is to automatically update the n branches on which the b
 
 Thus, in our case, we can simply checkout our my-feature-v3 branch and run the command git rebase my-feature-v1 --update-refs. With this option, Git updates not only the v3 branch but also the v2 branch to preserve the history. The result of this operation is as follows:
 
-image::/static/assets/images/git-nutshell/after-rebase.png[after rebase]
+image::{site.url('/static/assets/images/git-nutshell/after-rebase.png')}[after rebase]
 
 === In practice:
 
-image::/static/assets/images/git-nutshell/terminal.gif[showing commands in terminal]
+image::{site.url('/static/assets/images/git-nutshell/terminal.gif')}[showing commands in terminal]
 
 == Updating the Remote Repository
 
