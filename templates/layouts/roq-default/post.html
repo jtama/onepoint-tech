@@ -43,7 +43,8 @@ layout: roq-default/main
                     </div>
 
                 </div>
-                <div style="display: flex; flex-direction: row">
+                <div class="author">
+                {#if page.data.authors??}
                 {#for pageAuthor in page.data.authors.asStrings}
                 {#let author=(cdi:authors.get(pageAuthor))}
                 <div class="author">
@@ -56,6 +57,7 @@ layout: roq-default/main
                 </div>
                 {/let}
                 {/for}
+                {/if}
                 </div>
             </div>
         </div> <!-- End Wrap Content -->
