@@ -1,5 +1,5 @@
 ---
-layout: :theme/post
+layout: onepoint/post
 title: "Git update-refs in a nutshell"
 description: Git update-refs in a nutshell
 image: https://cdn.svgporn.com/logos/git-icon.svg
@@ -17,7 +17,7 @@ Branch stacking is a way to break down important features, allowing for smaller 
 
     The assumption here is that when each of these branches is individually merged into the main branch, the code will still be functional, as it has been appropriately divided.
 
-image::{site.url('/static/assets/images/git-nutshell/initial.png')}[Initial state, align="center"]
+image::{site.url('/static/assets/images/git-nutshell/initial.png')}[alt="Initial state", width=300 height=200]
 
 Let's say a small typo was made in the commit of the my-feature-v1 branch. A second commit needs to be added to fix the issue, resulting in the following history:
 
@@ -35,6 +35,10 @@ The goal of this option is to automatically update the n branches on which the b
 Thus, in our case, we can simply checkout our my-feature-v3 branch and run the command git rebase my-feature-v1 --update-refs. With this option, Git updates not only the v3 branch but also the v2 branch to preserve the history. The result of this operation is as follows:
 
 image::{site.url('/static/assets/images/git-nutshell/after-rebase.png')}[after rebase]
+
+[plantuml,diagram,svg, roles=[transactor,participant]]
+----
+----
 
 === In practice:
 

@@ -1,5 +1,5 @@
 ---
-layout: :theme/post
+layout: onepoint/post
 title: "ArchUnit : comment l'utiliser pour contrôler l'architecture de vos projets Java "
 description: Tour d'horizon d'Archunit
 image: archunit/cover.jpg

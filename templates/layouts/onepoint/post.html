@@ -44,20 +44,20 @@ layout: roq-default/main
 
                 </div>
                 <div class="author">
-                {#if page.data.authors??}
-                {#for pageAuthor in page.data.authors.asStrings}
-                {#let author=(cdi:authors.get(pageAuthor))}
-                <div class="author">
-                    <img src="{site.image(author.avatar)}" alt="author-{author}"/>
-                    <div class="author-data">
-                        <a target="_blank" href="{author.profile}"
-                           class="author-name">{author.name}</a>
-                        <span class="author-job-title">{author.job}</span>
+                    {#if page.data.authors??}
+                    {#for pageAuthor in page.data.authors.asStrings}
+                    {#let author=(cdi:authors.get(pageAuthor))}
+                    <div class="author">
+                        <img src="{site.image(author.avatar)}" alt="author-{author}"/>
+                        <div class="author-data">
+                            <a target="_blank" href="{author.profile}"
+                               class="author-name">{author.name}</a>
+                            <span class="author-job-title">{author.job}</span>
+                        </div>
                     </div>
-                </div>
-                {/let}
-                {/for}
-                {/if}
+                    {/let}
+                    {/for}
+                    {/if}
                 </div>
             </div>
         </div> <!-- End Wrap Content -->
@@ -66,6 +66,7 @@ layout: roq-default/main
 </article> <!-- End Article Page -->
 
 {#insert after-article /}
+
 <div class="giscus"></div>
 <script src="https://giscus.app/client.js"
         data-repo="jtama/onepoint-tech"

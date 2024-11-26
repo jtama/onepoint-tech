@@ -1,0 +1,420 @@
+---
+layout: onepoint/post
+title: Vous allez finir par les aimer les `Optionals` ?
+description: Essayons de mieux comprendre et mettre les `Optional`
+tags: [java]
+authors: [jtama]
+---
+
+
+> **_NOTE:_** Ceci est une retranscription par l'excellent https://dev.to/eplumas[Emmanuel Plumas] de https://youtu.be/0LVkoF5D1eE[la conférence que j'ai donné TouraineTech 2023], un très grand merci à lui ❤️.
+
+D'après la documentation officielle d' _Oracle_, un optional est un conteneur d’objet qui peut (ou pas) être null.
+
+Une fois qu'on a dit ça, on n'est pas bien avancé !
+
+Si les `optionals` existent c'est avant tout pour donner une vision à un tiers, pour lui indiquer une intention, certainement pas pour éviter des `NullPointerException`.
+
+Pinky and the brain vont nous aider à prendre tout ça en main.
+
+[.dialog]
+--
+==
+[.replica.right]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/pinky.png')}[.avatar]Pinky
+[.what]
+Coucou ! 👋
+
+[.replica.left]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/brain.png')}[.avatar]The brain
+[.what]
+Oui voilà, c'est ça, bonjour.
+==
+--
+
+
+== Quand les utiliser ?
+
+
+On peut par exemple les utiliser quand on représente le monde extérieur. Il ne nous est en effet pas possible de le contrôler, en tout cas, nous n'en avons pas encore trouver le moyen.
+
+Ici par exemple pour représenter une configuration externe :
+
+
+[source,java]
+----
+public class LeMondeExterieurConfig {
+	private Optional<String> login;
+	private Optional<String> password;
+	private Optional<Boolean> skiplogin;
+}
+----
+
+
+Cela veut dire que je sais que ce qui arrive de l’extérieur peut être `null`.
+Remarquez que ces propriétés sont `private`, ce qui signifie qu'il est fort probable que je ne les laisserai pas sortir de ma classe en l'état.
+
+On verra plus tard ce que pinky faif de ces données.
+
+On peut également les utiliser quand on accède soi-même au monde extérieur, par exemple dans un _repository_.
+
+
+[source,java]
+----
+public interface LeMondeExterieurAcces {
+	Optional<Person> findById(UUID id);
+	List<Person> findByName(String name);
+	Person findByNir(String nir) throws NotFoundException;
+}
+----
+
+Ces trois signatures indiquent trois intentions différentes :
+
+1. `findById` peut renvoyer la valeur `null` et selon les cas les traitements pourraient être différents. Si je veux en effet accéder à l'utilisateur, alors il y a un problème. Mais si je veux juste valider qu'il n'existe pas avant de l'insérer, alors la nullité n'est pas un problème.
+1. `findbyName` renvoie un type `list`, aucun bonne raison de renvoyer `null`, un liste vide fera largement l'affaire.
+1. `findByNir` renvoie directement un type `Person`, ici on indique clairement que le nullité  n'est pas possible, ça sera une donnée ou une exception.
+
+
+== Qu’est-ce que j'en fais et comment j’utilise les `Optionals`
+
+Nous allons illustrer plusieurs cas de traitement d'`optional` au travers de l'exemple d'une liste de course pour notre prochaine raclette.
+
+[.dialog]
+--
+[.replica.left]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/brain.png')}[.avatar]The brain
+[.what]
+C'est gentil de me laisser enfin la parole chez Jérôme.
+
+Puisque qu'on en est là, Pinky, merci d'aller faire les courses pour la raclette. Voilà la liste:
+
+image::{site.url('/static/assets/images/optionals/recette_raclette.png')}[Recette de raclette]
+==
+--
+
+== Des patates Bintjes, sinon des Amandines: `orElse()`
+
+[.dialog]
+--
+==
+[.replica.right]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/pinky.png')}[.avatar]Pinky
+[.what]
+
+Ahhhh ok j'ai tout compris, du coup c'est comme ça que je dois faire.
+
+[source,java]
+----
+Patate patate;
+Optional<Patate> maybePatate = getBintje()
+if (maybePatate.isPresent()){
+	patate = maybePatate.get();
+} else {
+	patate = amandine
+}
+----
+[.replica.left]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/brain.png')}[.avatar]The brain
+[.what]
+*Non Pinky! Comme d'habitude tu fais tout à l'envers.*
+C'est comme ça cher Pinky que tu devrais faire. Arrête tes bêtises maintenant.
+
+[source]
+----
+private Optional<Patate> getBintje() { ...}
+Patate patate = getBintje().orElse(amandine);
+----
+
+==
+--
+
+Dans le cas de la représentation de la configuration externe, il est très probable que cette méthode `orElse()` soit celle que nous aurions utilisée pour assigner des valeurs par défaut.
+
+
+
+== Si le boucher du centre a de la charcuterie prends-en, sinon va chez le boucher beaucoup plus loin : `orElseGet()`
+
+
+[.dialog]
+--
+==
+[.replica.right]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/pinky.png')}[.avatar]Pinky
+[.what]
+
+Cette fois-ci, je fais tout bien regarde.
+
+[source,java]
+----
+private Optional<Charcuterie> getCharcuterieDuCentre () {....}
+private Charcuterie getCharcuteriePlusloin() {....}
+
+Charcuterie = getCharcuterieDuCentre().orElse(getCharcuteriePlusLoin());
+----
+[.replica.left]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/brain.png')}[.avatar]The brain
+[.what]
+Cela peut marcher avec un appel de méthode mais _Java_ est ainsi fait que les paramètres d'une méthode sont évalués avant d'invoquer les méthodes !
+
+On invoquera donc `getCharcuteriePlusLoin()` coûteuse en mémoire/en temps/ce qu'on veut, alors qu'on ne sait même pas si on en a besoin.
+
+La méthode `orElseGet()` qui prend en paramètre un `Supplier` nous permet de n'invoquer la méthode coûteuse qu'une fois qu'on est certain que c'est nécessaire.
+
+
+[source,java]
+----
+private Optional<Charcuterie> getCharcuterieDuCentre () {....}
+private Charcuterie getCharcuteriePlusloin() {....}
+Charcuterie = getCharcuterieDuCentre()
+		.orElseGet(() -> getCharcuteriePlusLoin());
+----
+
+Le `supplier` ne sera exécuté que s’il y en a besoin !
+==
+--
+
+
+== Fromage à raclette (ou panic) : `orElseThrow*`
+
+
+[.dialog]
+--
+==
+[.replica.right]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/pinky.png')}[.avatar]Pinky
+[.what]
+[source,java]
+----
+Fromage morbier = maybeFromage.orElseThrow(() -> new ThreadDeath());
+----
+
+[.replica.left]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/brain.png')}[.avatar]The brain
+[.what]
+Ahh je suis fier de toi. Tu remarques que la méthode `orElseThrow()` prend également un `supplier`.
+
+On aurait pu faire un `orElseThrow()` qui prend directement en paramètre une instance d'exception, mais leur instanciation étant coûteuse (notamment à cause du mécanisme de création de _stack trace_), les développeurs de l'API Java, ont là aussi choisi le pattern du `Supplier` pour retarder son instanciation.
+==
+--
+
+== D'autres utilisations avancées
+
+Désolé, la digestion de la raclette a été un peu difficile, et les exemples suivants ne viennent pas de ma liste de course.
+
+image:{site.url('/static/assets/images/optionals/todos.png')}[Liste de tâche à faire]
+
+
+=== Si on trouve le prix du cadeau, on donne le prix, sinon on donne 20€
+
+[.dialog]
+--
+==
+[.replica.right]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/pinky.png')}[.avatar]Pinky
+[.what]
+Alors là je suis désolé, je ne vois pas bien comment faire ça.
+
+[.replica.left]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/brain.png')}[.avatar]The brain
+[.what]
+Ici, en réalité nous ne sommes pas intéressés directement par le cadeaux mais uniquement par son prix, on ne veut pas traiter un `Optional<Cadeau>`, on aimerait un Òptional<Long>...
+
+On peut utiliser la méthode `map()` afin d'effectuer cette transformation et ensuite lui appliquer un `orElse()`.
+
+
+[source,java]
+----
+
+Long participation = cadeau
+	.map(Cadeau::getPrix)
+	.orElse(20L);
+
+----
+==
+--
+
+
+
+=== Si le caviste a du Touraine, on en prend
+
+[.dialog]
+--
+[.replica.right]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/pinky.png')}[.avatar]Pinky
+[.what]
+[source,java]
+----
+caviste.getTouraine()
+   .map(...);
+----
+
+Heuu non, il va encore falloir m'aider
+
+[.replica.left]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/brain.png')}[.avatar]The brain
+[.what]
+La méthode `ifPresent()` est là pour toi !
+[source,java]
+----
+caviste.getTouraine()
+  .ifPresent(bouteille -> onEnPrend(bouteille));
+----
+
+Elle prend en paramètre un `Consumer` !
+
+La méthode `onEnPrend()` n’a plus à se poser la question de la nullité de bouteille : on fait un appel conditionnel à la méthode !
+
+==
+--
+
+=== Si le caviste a du Touraine ET qu’il n’est pas trop cher, on en prend
+
+[.dialog]
+--
+[.replica.right]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/pinky.png')}[.avatar]Pinky
+[.what]
+[source,java]
+----
+caviste.getTouraine()
+  .ifPresent(bouteille -> {
+    if (pasTropCher(bouteille))
+        onEnPrend(bouteille)
+  });
+----
+
+Là, j'ai bon, non ?
+
+[.replica.left]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/brain.png')}[.avatar]The brain
+[.what]
+Tu vas trop vite, tu ne lis pas la documentation. Encore une fois, une méthode est là pour toi, la méthode `filter`.
+
+[source,java]
+----
+
+caviste.getTouraine()
+	.filter(bouteille -> pasTropCher(bouteille)
+	.ifPresent(bouteille -> onEnPrend(bouteille));
+
+----
+
+Elle prend un `Predicate`.
+
+Les plus attentif d'entre vous auront remarqué que l'API des `Optional` rappelle beaucoup celle des `Stream`
+--
+
+
+=== Si le primeur est ouvert ET qu’il a de la mangue, on prend, sinon, on prend de l’ananas
+
+[.dialog]
+--
+[.replica.right]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/pinky.png')}[.avatar]Pinky
+[.what]
+image::https://cdn.dribbble.com/users/3487172/screenshots/6364505/manga_cs5.gif[Gif d'un oiseau représentant l'incapcité à faire.]
+
+[.replica.left]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/brain.png')}[.avatar]The brain
+[.what]
+Rhââââââ
+
+[source,java]
+----
+
+maybePrimeur //Optional<Primeur>
+	.map(primeur -> primeur.getMangue()); //Optional<Optional<Fruit>>
+
+maybePrimeur //Optional<Primeur>
+	.flatmap(primeur -> primeur.getMangue()) //Optional<Fruit>
+	.orElse(new Ananas());
+
+----
+
+Comme sur un stream, ces opérations ne sont pas terminales, mais seront executées au moment où on fait un `get()` ou un `orElse()`.  En fait, on programme un _pipeline_ de traitement.
+--
+
+=== Si je trouve les clefs dans mon sac je les utilise, sinon je passe par la fenêtre
+
+
+[.dialog]
+--
+[.replica.right]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/pinky.png')}[.avatar]Pinky
+[.what]
+image::https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExc21iOWI1NGMxaTVlMzA4NzdxMWJuejN6Mjdjc202azBkdzYyeWdkbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/GeTJb2rMvZCne/giphy.webp[Gif de pinky.]
+
+Tu vas _encore_ essayer de conquérire le monde ?
+
+[.replica.left]
+==
+[.who]
+image:{site.url('/static/assets/images/optionals/brain.png')}[.avatar]The brain
+[.what]
+Tais-toi, sot.
+
+[source,java]
+----
+maybeClef
+  .ifPresentOrElse(
+     clef -> utilise(cle),
+	() -> passeParLaFenetre());
+----
+
+Malheureusement la méthode `ifAbsent()` n’existe pas sur les `Optionals`, On est obligé de faire du `isEmpty()`ce qui sera toujours mieux que `!isPresent()`.
+--
+
+== Ce qu'on ne veut plus jamais voir...
+
+[source,java]
+----
+if(optional.isPresent()) {
+    var value = optional.get();
+}
+----
+
+[source,java]
+----
+String code = Optional.ofNullable(app.getCodeImputationDefaut())
+	.orElse("");
+----
+
+Non et non, c'est au service de fournir  la valeur par défaut...
+
+
