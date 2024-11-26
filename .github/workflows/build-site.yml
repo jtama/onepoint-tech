@@ -31,7 +31,7 @@ jobs:
 
       - name: Build blog
         run: |
-          QUARKUS_ROQ_GENERATOR_BATCH=true mvn package quarkus:run
+          QUARKUS_ROQ_GENERATOR_BATCH=true mvn package quarkus:run -Dsite.future=true -Dsite.draft=true
 
       - name: Store PR id
         if: github.event_name == 'pull_request'

@@ -1,11 +1,12 @@
 ---
-layout: :theme/post
-title: "BDX I/O 2024 vu par nos experts Onepoint "
+layout: onepoint/post
+title: "BDX I/O 2024 vu par nos experts Onepoint"
 description: BDX I/O 2024 vu par nos experts Onepoint, les conférences qu'ils ont aimé.
 image: bdxio2024/cover.jpg
 figCaption: "Vue de la verrière de la gare de Bordeaux Saint-Jean"
 tags: [conference,techtalks]
 authors: [lthienot]
+serie: Retour de conférences
 ---
 
 
