@@ -12,6 +12,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+        <quarkus-roq.version>1.0.4</quarkus-roq.version>
         <quarkus.platform.version>3.17.0</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
@@ -33,22 +34,22 @@
         <dependency>
             <groupId>io.quarkiverse.roq</groupId>
             <artifactId>quarkus-roq</artifactId>
-            <version>1.0.4</version>
+            <version>${quarkus-roq.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.roq</groupId>
             <artifactId>quarkus-roq-plugin-tagging</artifactId>
-            <version>1.0.4</version>
+            <version>${quarkus-roq.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.roq</groupId>
             <artifactId>quarkus-roq-plugin-asciidoc</artifactId>
-            <version>1.0.4</version>
+            <version>${quarkus-roq.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.roq</groupId>
             <artifactId>quarkus-roq-plugin-markdown</artifactId>
-            <version>1.0.4</version>
+            <version>${quarkus-roq.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -57,7 +58,7 @@
         <dependency>
             <groupId>io.quarkiverse.roq</groupId>
             <artifactId>quarkus-roq-theme-default</artifactId>
-            <version>1.0.4</version>
+            <version>${quarkus-roq.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mvnpm</groupId>

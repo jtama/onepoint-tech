@@ -1,5 +1,11 @@
 @import 'highlight.js/scss/default.scss';
 
+.serie {
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 5px;
+}
+
 .page-footer authors {
   display: flex;
   flex-direction: row;
@@ -64,6 +70,54 @@
       }
     }
   }
+}
+
+.dialog {
+  display: flex;
+  flex-basis: max-content;
+  flex-direction: column;
+
+  .replica {
+    border-radius: 5px;
+    margin: 20px 10px 10px;
+    padding: 10px 10px 10px;
+    position: relative;
+    max-width: 75%;
+  }
+
+  .who {
+    border-radius: 5px;
+    position: absolute;
+    padding: 0 10px 0 10px;
+    top: -28px;
+    background-color: white;
+    display: inline;
+    overflow: auto;
+  }
+
+  .left {
+    margin-right: auto;
+    background-color: #f9dfff;
+    .who {
+      border: 2px solid #f9dfff;
+      background-color: inherit;
+      right: 14px;
+    }
+  }
+
+  .right {
+    margin-left: auto;
+    background-color: #fae7e0;
+    .who {
+      border: 2px solid #fae7e0;
+      background-color: inherit;
+      left: 14px;
+    }
+  }
+}
+
+.avatar {
+  height: 1em;
 }
 
 // Responsive design
