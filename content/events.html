@@ -11,11 +11,8 @@ layout: :theme/page
     <div class="event-content">
         <span class="post-date"><i class="fa fa-calendar"></i>{event.parsedDate.format('yyyy, MMM dd')}</span>
         <h2 class="event-title">{event.title}</h2>
-        {#asciidoc}{event.description}{/asciidoc}
+        {event.description.asciidocToHtml.raw }
         {#if event.link}<a href="{site.url.resolve(event.link)}">More info...</a>{/if}
     </div>
 </article>
 {/for}
-
-Toute personne prononçant les mots IA, LLM ou encore RAG, se vera octroyé un retrait de 6 point, ou bien une suspension du
-permis de développeur en cas de période probatoire.

@@ -6,7 +6,7 @@ image: bdxio2024/cover.jpg
 figCaption: "Vue de la verrière de la gare de Bordeaux Saint-Jean"
 tags: [conference,techtalks]
 authors: [lthienot]
-serie: Retour de conférences
+series: Retour de conférences
 ---
 
 
